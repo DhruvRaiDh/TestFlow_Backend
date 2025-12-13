@@ -7,7 +7,7 @@
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "postbuild": "npx copyfiles -u 1 src/**/*.json dist/"
+    "postbuild": "node scripts/build-assets.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
