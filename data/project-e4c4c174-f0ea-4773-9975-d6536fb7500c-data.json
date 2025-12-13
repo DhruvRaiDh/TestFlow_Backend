@@ -1,0 +1,96 @@
+{
+  "scripts": [
+    {
+      "name": "Test python - 10/13/2025, 1:44:59 PM",
+      "language": "python",
+      "code": "from selenium import webdriver\nfrom selenium.webdriver.common.by import By\nfrom selenium.webdriver.support.ui import WebDriverWait\nfrom selenium.webdriver.support import expected_conditions as EC\nfrom selenium.webdriver.support.select import Select\nimport time\n\n# Initialize Chrome WebDriver with options\noptions = webdriver.ChromeOptions()\noptions.add_argument('--start-maximized')\noptions.add_argument('--disable-blink-features=AutomationControlled')\n\ndriver = webdriver.Chrome(options=options)\ndriver.implicitly_wait(10)  # Implicit wait for all elements\n\ntry:\n    # Base URL: https://practicetestautomation.com\n\n    # Step 1: Navigate to the login page\n    driver.get(\"/practice-test-login/\")\n    time.sleep(1)  # Wait for page load\n\n    # Step 2: Wait for the username field to be present\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"username\"))\n    )\n\n    # Step 3: Click on the username field\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"username\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 4: Type 'student' into the username field\n    element = WebDriverWait(driver, 20).until(\n        EC.presence_of_element_located((By.ID, \"username\"))\n    )\n    element.clear()\n    element.send_keys(\"student\")\n\n    # Step 5: Wait for the password field to be present\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"password\"))\n    )\n\n    # Step 6: Click on the password field\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"password\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 7: Type 'password123' into the password field\n    element = WebDriverWait(driver, 20).until(\n        EC.presence_of_element_located((By.ID, \"password\"))\n    )\n    element.clear()\n    element.send_keys(\"password123\")\n\n    # Step 8: Wait for the submit button to be present\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"submit\"))\n    )\n\n    # Step 9: Click the submit button for the first login attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"submit\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 10: Wait for the username field to be present for the second attempt (assuming login failed or page reloaded)\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"username\"))\n    )\n\n    # Step 11: Click on the username field for the second attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"username\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 12: Type 'student' into the username field for the second attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.presence_of_element_located((By.ID, \"username\"))\n    )\n    element.clear()\n    element.send_keys(\"student\")\n\n    # Step 13: Wait for the password field to be present for the second attempt\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"password\"))\n    )\n\n    # Step 14: Click on the password field for the second attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"password\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 15: Type 'Password123' (case-sensitive) into the password field for the second attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.presence_of_element_located((By.ID, \"password\"))\n    )\n    element.clear()\n    element.send_keys(\"Password123\")\n\n    # Step 16: Wait for the 'login' button to be present\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"login\"))\n    )\n\n    # Step 17: Click the 'login' button for the second attempt\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"login\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 18: Wait for the submit button to be present (after clicking 'login' button)\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.ID, \"submit\"))\n    )\n\n    # Step 19: Click the submit button (as requested, after clicking 'login')\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.ID, \"submit\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    # Step 20: Wait for the 'Log out' link to appear, indicating successful login\n    WebDriverWait(driver, 20).until(\n        EC.visibility_of_element_located((By.LINK_TEXT, \"Log out\"))\n    )\n\n    # Step 21: Click the 'Log out' link\n    element = WebDriverWait(driver, 20).until(\n        EC.element_to_be_clickable((By.LINK_TEXT, \"Log out\"))\n    )\n    driver.execute_script(\"arguments[0].scrollIntoView(true);\", element)\n    time.sleep(0.5)\n    element.click()\n\n    print(\"✓ Test completed successfully!\")\n    \nexcept Exception as e:\n    print(f\"✗ Test failed: {str(e)}\")\n    driver.save_screenshot(\"error_screenshot.png\")\n    raise\n    \nfinally:\n    driver.quit()\n",
+      "script": {
+        "baseUrl": "https://practicetestautomation.com",
+        "steps": [
+          {
+            "action": "navigate",
+            "url": "/practice-test-login/",
+            "description": "Navigate to /practice-test-login/"
+          },
+          {
+            "action": "click",
+            "selector": "css:1166x816",
+            "description": "setwindowsize: 1166x816"
+          },
+          {
+            "action": "click",
+            "selector": "id:username",
+            "description": "Click element: username"
+          },
+          {
+            "action": "type",
+            "selector": "id:username",
+            "value": "student",
+            "description": "Type \"student\" into username"
+          },
+          {
+            "action": "click",
+            "selector": "id:password",
+            "description": "Click element: password"
+          },
+          {
+            "action": "type",
+            "selector": "id:password",
+            "value": "password123",
+            "description": "Type \"password123\" into password"
+          },
+          {
+            "action": "click",
+            "selector": "id:submit",
+            "description": "Click element: submit"
+          },
+          {
+            "action": "click",
+            "selector": "id:username",
+            "description": "Click element: username"
+          },
+          {
+            "action": "type",
+            "selector": "id:username",
+            "value": "student",
+            "description": "Type \"student\" into username"
+          },
+          {
+            "action": "click",
+            "selector": "id:password",
+            "description": "Click element: password"
+          },
+          {
+            "action": "type",
+            "selector": "id:password",
+            "value": "Password123",
+            "description": "Type \"Password123\" into password"
+          },
+          {
+            "action": "click",
+            "selector": "id:login",
+            "description": "Click element: login"
+          },
+          {
+            "action": "click",
+            "selector": "id:submit",
+            "description": "Click element: submit"
+          },
+          {
+            "action": "click",
+            "selector": "css:linkText=Log out",
+            "description": "Click element: linkText=Log out"
+          }
+        ]
+      },
+      "id": "8b5a52c5-41d0-4ecd-a24b-5157a1f97372",
+      "createdAt": "2025-10-13T08:14:59.151Z",
+      "updatedAt": "2025-10-14T06:30:40.008Z",
+      "lastRun": {
+        "status": "pass",
+        "timestamp": "2025-10-14T06:30:40.008Z",
+        "logs": "[INFO] Starting test: Test python - 10/13/2025, 1:44:59 PM\n[INFO] Base URL: https://practicetestautomation.com\n[STEP 1] navigate\n[SUCCESS] Step 1 completed\n[STEP 2] click\n[SUCCESS] Step 2 completed\n[STEP 3] click\n[SUCCESS] Step 3 completed\n[STEP 4] type\n[SUCCESS] Step 4 completed\n[STEP 5] click\n[SUCCESS] Step 5 completed\n[STEP 6] type\n[SUCCESS] Step 6 completed\n[STEP 7] click\n[SUCCESS] Step 7 completed\n[STEP 8] click\n[SUCCESS] Step 8 completed\n[STEP 9] type\n[SUCCESS] Step 9 completed\n[STEP 10] click\n[SUCCESS] Step 10 completed\n[STEP 11] type\n[SUCCESS] Step 11 completed\n[STEP 12] click\n[SUCCESS] Step 12 completed\n[STEP 13] click\n[SUCCESS] Step 13 completed\n[STEP 14] click\n[SUCCESS] Step 14 completed\n[INFO] Test completed successfully"
+      }
+    }
+  ]
+}

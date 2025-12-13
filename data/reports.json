@@ -1,0 +1,15 @@
+[
+  {
+    "id": "1763825997477",
+    "projectId": "0032b22e-45fc-44a9-9a06-dce933195bea",
+    "recordingId": "Test1",
+    "scriptName": "Test1",
+    "module": "Login",
+    "status": "Passed",
+    "stepsExecuted": 7,
+    "totalSteps": 7,
+    "error": null,
+    "timestamp": "2025-11-22T15:39:57.477Z",
+    "duration": 13404
+  }
+]

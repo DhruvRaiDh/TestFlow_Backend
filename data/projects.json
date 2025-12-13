@@ -1,0 +1,26 @@
+{
+  "projects": [
+    {
+      "id": "0032b22e-45fc-44a9-9a06-dce933195bea",
+      "name": "FoodChow",
+      "description": "testcases and bug",
+      "createdAt": "2025-09-07T07:38:15.052Z",
+      "updatedAt": "2025-09-09T15:44:12.197Z"
+    },
+    {
+      "id": "e4c4c174-f0ea-4773-9975-d6536fb7500c",
+      "name": "test2",
+      "description": "rest",
+      "createdAt": "2025-09-09T15:44:34.015Z",
+      "updatedAt": "2025-09-09T15:44:34.015Z"
+    },
+    {
+      "id": "e8477172-087a-4d72-a309-60871b372ddd",
+      "name": "Foodchow POS",
+      "description": "POS app Desktop and Android",
+      "user_id": "maTXKvjwehP7moFBH9fmG9bTCeI3",
+      "createdAt": "2025-12-10T11:36:25.348Z",
+      "updatedAt": "2025-12-10T11:36:25.348Z"
+    }
+  ]
+}
