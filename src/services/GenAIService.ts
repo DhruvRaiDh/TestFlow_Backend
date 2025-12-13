@@ -1,19 +1,61 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import dotenv from 'dotenv';
 import path from 'path';
+import * as fs from 'fs';
 
 // Load env from backend root
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-const apiKey = process.env.GEMINI_API_KEY;
+// Helper to write to log file for debugging
+const logErrorToFile = (message: string, error: any) => {
+    const logPath = path.join(__dirname, '../../ai_debug.log');
+    const timestamp = new Date().toISOString();
 
-let genAI: GoogleGenerativeAI | null = null;
-let model: any = null;
+    let errorDetails = '';
+    if (error instanceof Error) {
+        errorDetails = error.stack || error.message;
+    } else {
+        errorDetails = JSON.stringify(error);
+    }
 
-if (apiKey) {
+    const logEntry = `\n[${timestamp}] ${message}\nError: ${errorDetails}\n-------------------\n`;
+
     try {
-        genAI = new GoogleGenerativeAI(apiKey);
-        model = genAI.getGenerativeModel({
+        fs.appendFileSync(logPath, logEntry);
+    } catch (e) {
+        console.error("Failed to write to log file:", e);
+    }
+};
+
+const logResponseToFile = (message: string, content: string) => {
+    const logPath = path.join(__dirname, '../../ai_debug.log');
+    const timestamp = new Date().toISOString();
+    const logEntry = `\n[${timestamp}] ${message}\nContent Preview: ${content.substring(0, 500)}...\n-------------------\n`;
+    try {
+        fs.appendFileSync(logPath, logEntry);
+    } catch (e) {
+        console.error("Failed to write to log file:", e);
+    }
+};
+
+export class GenAIService {
+    private genAI: GoogleGenerativeAI;
+    private model: any;
+
+    constructor() {
+        const apiKey = process.env.GEMINI_API_KEY;
+        console.log(`[GenAIService] Initializing with API Key present: ${!!apiKey}`);
+
+        if (!apiKey) {
+            console.error('[GenAIService] FATAL: GEMINI_API_KEY is missing in environment variables!');
+            // Initialize with dummy key to prevent crash on startup
+            this.genAI = new GoogleGenerativeAI('dummy_key');
+        } else {
+            this.genAI = new GoogleGenerativeAI(apiKey);
+        }
+
+        // Using gemini-1.5-flash as the standard stable model
+        this.model = this.genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
             safetySettings: [
                 {
@@ -34,16 +76,11 @@ if (apiKey) {
                 },
             ]
         });
-    } catch (error) {
-        console.error("Failed to initialize Gemini AI:", error);
+        console.log(`[GenAIService] Active Model: gemini-1.5-flash`);
     }
-} else {
-    console.warn("GEMINI_API_KEY is not set in backend/.env. AI features will be disabled.");
-}
 
-export class GenAIService {
     async generateTestCases(requirements: string): Promise<string> {
-        if (!model) {
+        if (!process.env.GEMINI_API_KEY) {
             throw new Error("AI Service is not configured (Missing GEMINI_API_KEY).");
         }
 
@@ -62,11 +99,12 @@ export class GenAIService {
         `;
 
         try {
-            const result = await model.generateContent(prompt);
+            const result = await this.model.generateContent(prompt);
             const response = await result.response;
             return response.text();
         } catch (error) {
-            console.error("Error generating test cases:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            logErrorToFile("generateTestCases Failed", error);
+            console.error("Error generating test cases:", error);
             throw new Error(`Failed to generate test cases: ${(error as Error).message}`);
         }
     }
@@ -80,11 +118,9 @@ export class GenAIService {
         severity: string;
         priority: string;
     }> {
-        if (!model) {
+        if (!process.env.GEMINI_API_KEY) {
             throw new Error("AI Service is not configured (Missing GEMINI_API_KEY).");
         }
-
-        console.log("--> BACKEND: GenAIService received description:", description);
 
         const prompt = `
         Act as a QA Lead. Analyze the following verbose bug description/logs and generate a structured Bug Report.
@@ -105,7 +141,7 @@ export class GenAIService {
         `;
 
         try {
-            const result = await model.generateContent(prompt);
+            const result = await this.model.generateContent(prompt);
             const response = await result.response;
             const text = response.text();
 
@@ -116,12 +152,14 @@ export class GenAIService {
             }
             return JSON.parse(text);
         } catch (error) {
-            console.error("Error summarizing bug:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            logErrorToFile("summarizeBug Failed", error);
+            console.error("Error summarizing bug:", error);
             throw new Error(`Failed to summarize bug: ${(error as Error).message}`);
         }
     }
+
     async generateStructuredTestCase(prompt: string): Promise<any> {
-        if (!model) {
+        if (!process.env.GEMINI_API_KEY) {
             throw new Error("AI Service is not configured (Missing GEMINI_API_KEY).");
         }
 
@@ -153,7 +191,7 @@ export class GenAIService {
         `;
 
         try {
-            const result = await model.generateContent(systemPrompt);
+            const result = await this.model.generateContent(systemPrompt);
             const response = await result.response;
             const text = response.text();
 
@@ -167,30 +205,24 @@ export class GenAIService {
             return JSON.parse(text);
 
         } catch (error) {
-            console.error("Error generating structured test case:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            logErrorToFile("generateStructuredTestCase Failed", error);
+            console.error("Error generating structured test case:", error);
             throw new Error(`Failed to generate test case: ${(error as Error).message}`);
         }
     }
 
     async generateBulkTestCases(prompt: string): Promise<any[]> {
-        if (!model) {
+        if (!process.env.GEMINI_API_KEY) {
             throw new Error("AI Service is not configured (Missing GEMINI_API_KEY).");
         }
 
-        console.log("--> BACKEND: GenAIService generating BULK test cases for prompt length:", prompt.length);
+        console.log("--> BACKEND: GenAIService generating BULK test cases, prompt len:", prompt.length);
 
         const systemPrompt = `
         Act as a Principal QA Engineer.
         Your task is to generate an EXHAUSTIVE and COMPREHENSIVE suite of test cases based on the user's detailed flow description.
         
         GOAL: Generate as many test cases as logically possible (target 20+ if the logic allows).
-        COVERAGE: You must cover:
-        1. Positive Flow (Happy Path)
-        2. Negative Flow (Invalid inputs, errors)
-        3. Boundary Value Analysis (Min/Max limits)
-        4. Edge Cases (Network loss, timeouts, empty states)
-        5. Security Scenarios (SQLi, XSS, Permission checks) - only if relevant to input.
-        
         OUTPUT FORMAT:
         You must strictly output a VALID JSON ARRAY of objects. 
         Do not include markdown formatting, backticks, or any explanation text outside the JSON.
@@ -210,22 +242,16 @@ export class GenAIService {
             "comments": "Auto-generated Type: [Type e.g., Negative/Edge]"
         }
 
-        Rules:
-        1. 'preConditions' and 'testSteps' MUST be plain text numbered lists. DO NOT use HTML tags.
-        2. 'testCaseId' should increment (TC_AI_001, TC_AI_002...).
-        3. BE THOROUGH. Do not simplify.
-
         User Flow Description: "${prompt}"
         `;
 
         try {
-            // Increase token limit or allow long response if model supports config here
-            // Note: gemini-2.5-flash is fast but ensure prompt is clear on "JSON ONLY"
-            const result = await model.generateContent(systemPrompt);
+            const result = await this.model.generateContent(systemPrompt);
             const response = await result.response;
             const text = response.text();
 
             console.log("--> BACKEND: AI Response Length:", text.length);
+            logResponseToFile("generateBulkTestCases Response", text);
 
             // Extract JSON Array
             const jsonStart = text.indexOf('[');
@@ -235,11 +261,12 @@ export class GenAIService {
                 return JSON.parse(jsonStr);
             }
 
-            // Fallback if no brackets found (unlikely with strict prompt)
+            // Fallback
             return JSON.parse(text);
 
         } catch (error) {
-            console.error("Error generating bulk test cases:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+            logErrorToFile("generateBulkTestCases Failed", error);
+            console.error("Error generating bulk test cases:", error);
             throw new Error(`Failed to generate bulk test cases: ${(error as Error).message}`);
         }
     }
