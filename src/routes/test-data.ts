@@ -7,7 +7,10 @@ const upload = multer(); // Use memory storage for simplicity
 
 router.get('/', async (req, res) => {
     try {
-        const datasets = await testDataService.listDatasets();
+        const { projectId } = req.query;
+        if (!projectId) return res.status(400).json({ error: 'Project ID required' });
+
+        const datasets = await testDataService.listDatasets(projectId as string);
         res.json(datasets);
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });
@@ -33,7 +36,10 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         const originalName = file.originalname;
         const type = originalName.endsWith('.json') ? 'json' : 'csv';
 
-        const dataset = await testDataService.saveDataset(originalName, content, type);
+        const { projectId } = req.body;
+        if (!projectId) return res.status(400).json({ error: 'Project ID required' });
+
+        const dataset = await testDataService.saveDataset(originalName, content, type, projectId);
         res.json(dataset);
 
     } catch (error) {

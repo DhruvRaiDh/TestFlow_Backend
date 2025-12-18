@@ -20,7 +20,10 @@ router.post('/', async (req, res) => {
 // List Tests
 router.get('/', async (req, res) => {
     try {
-        const tests = await visualTestService.getTests();
+        const { projectId } = req.query;
+        if (!projectId) return res.status(400).json({ error: 'Project ID required' });
+
+        const tests = await visualTestService.getTests(projectId as string);
         res.json(tests);
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });

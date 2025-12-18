@@ -34,8 +34,8 @@ export class VisualTestService {
     async getTests(projectId: string = 'default') {
         const { data, error } = await supabase
             .from('visual_tests')
-            .select('*');
-        //.eq('project_id', projectId); // Allow project filter later
+            .select('*')
+            .eq('project_id', projectId);
 
         if (error) throw new Error(error.message);
         return data;

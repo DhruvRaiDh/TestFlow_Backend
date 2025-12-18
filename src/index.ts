@@ -17,6 +17,7 @@ import schedulesRoutes from './routes/schedules'; // Default export
 import { adminRoutes } from './routes/admin';
 import { userRoutes } from './routes/user';
 import { gitRoutes } from './routes/git';
+import { apiLabRouter } from './routes/api-lab';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ app.use('/api/schedules', schedulesRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/git', gitRoutes);
+app.use('/api/lab', apiLabRouter);
 
 // Initialize Scheduler
 schedulerService.init().catch(err => console.error("Scheduler Init Failed:", err));

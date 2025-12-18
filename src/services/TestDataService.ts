@@ -14,10 +14,11 @@ export interface Dataset {
 
 export class TestDataService {
 
-    async listDatasets(): Promise<Dataset[]> {
+    async listDatasets(projectId: string): Promise<Dataset[]> {
         const { data, error } = await supabase
             .from('test_datasets')
             .select('*')
+            .eq('project_id', projectId) // Filter by project
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
