@@ -41,6 +41,17 @@ recorderRoutes.get('/list', async (req, res) => {
     }
 });
 
+// Alias for frontend compatibility (VisualTests.tsx calls /scripts)
+recorderRoutes.get('/scripts', async (req, res) => {
+    try {
+        const { projectId } = req.query;
+        const scripts = await recorderService.getScripts(projectId as string);
+        res.json(scripts);
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 recorderRoutes.post('/play', async (req, res) => {
     try {
         const { scriptId } = req.body;

@@ -16,6 +16,7 @@ import testDataRoutes from './routes/test-data'; // Default export
 import schedulesRoutes from './routes/schedules'; // Default export
 import { adminRoutes } from './routes/admin';
 import { userRoutes } from './routes/user';
+import { gitRoutes } from './routes/git';
 
 dotenv.config();
 
@@ -51,11 +52,12 @@ app.use('/api/recorder', recorderRoutes);
 app.use('/api/projects', projectRoutes);
 // Reports are handled within recorderRoutes or projectRoutes for now
 // app.use('/api/reports', reportRoutes); 
-app.use('/api/visual-tests', visualTestRouter);
+app.use('/api/visual', visualTestRouter);
 app.use('/api/test-data', testDataRoutes);
 app.use('/api/schedules', schedulesRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/git', gitRoutes);
 
 // Initialize Scheduler
 schedulerService.init().catch(err => console.error("Scheduler Init Failed:", err));
