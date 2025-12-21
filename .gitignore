@@ -6,3 +6,4 @@ coverage
 push_error.log
 storage
 push_error_2.log
+service-account.json
