@@ -18,7 +18,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
             // Allow public access to health check or specific routes if needed
             // But for protected routes, fail.
-            // For now, if no token, check if we have x-user-id as fallback (dev mode)
             if (userIdHeader) {
                 (req as any).user = { uid: userIdHeader };
                 return next();
